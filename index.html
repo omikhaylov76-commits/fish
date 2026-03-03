@@ -148,8 +148,10 @@
         }
         
         /* Стили для умного помощника (ИИ) */
+        .input-wrapper { position: relative; margin-top: 15px; width: 100%; }
+        
         #ai-input {
-            width: 100%; box-sizing: border-box; padding: 16px; margin-top: 15px;
+            width: 100%; box-sizing: border-box; padding: 16px; padding-right: 55px; margin-top: 0;
             border-radius: 18px; border: 1px solid rgba(0,0,0,0.08);
             background: rgba(255, 255, 255, 0.5); font-family: inherit; font-size: 1rem;
             resize: vertical; min-height: 85px; color: #1d1d1f; outline: none;
@@ -158,6 +160,40 @@
         }
         #ai-input:focus { border-color: var(--primary); background: rgba(255, 255, 255, 0.8); }
         
+        .mic-btn {
+            position: absolute; right: 12px; bottom: 12px;
+            width: 36px; height: 36px; border-radius: 50%;
+            background: rgba(2, 132, 199, 0.1); border: none;
+            font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.3s ease; color: var(--primary-dark);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+        }
+        .mic-btn:hover { background: rgba(2, 132, 199, 0.2); transform: scale(1.05); }
+        .mic-btn:active { transform: scale(0.95); }
+        .mic-btn.recording {
+            background: #ef4444; color: white;
+            animation: pulse-red 1.5s infinite;
+        }
+        
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        
+        /* Стили для кнопки озвучивания (TTS) */
+        .tts-btn {
+            background: rgba(16, 185, 129, 0.1); color: #059669;
+            border: 1px solid rgba(16, 185, 129, 0.3); padding: 8px 16px;
+            border-radius: 20px; font-size: 0.9rem; cursor: pointer; font-weight: 700;
+            display: inline-flex; align-items: center; gap: 6px; margin-top: 15px;
+            transition: all 0.2s ease; backdrop-filter: blur(5px);
+        }
+        .tts-btn:hover { background: rgba(16, 185, 129, 0.2); transform: translateY(-1px); }
+        .tts-btn:active { transform: translateY(1px); }
+        .tts-btn.playing { background: #fee2e2; color: #dc2626; border-color: rgba(220, 38, 38, 0.3); }
+
         .chip-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; margin-bottom: 18px; }
         .chip {
             background: rgba(2, 132, 199, 0.1); color: var(--primary-dark);
@@ -294,7 +330,10 @@
         <h2 class="card-title">✨ Умный помощник</h2>
         <div class="step-text"><p>Сомневаетесь в совместимости рыб или хотите перевести фразу для продавца? Спросите ИИ-аквариумиста!</p></div>
         
-        <textarea id="ai-input" placeholder="Например: Можно ли добавить в этот список креветок вишен?"></textarea>
+        <div class="input-wrapper">
+            <textarea id="ai-input" placeholder="Например: Можно ли добавить в этот список креветок вишен?"></textarea>
+            <button id="mic-btn" class="mic-btn" onclick="toggleVoiceInput()" title="Голосовой ввод">🎤</button>
+        </div>
         
         <div class="chip-container">
             <button class="chip" onclick="fillPrompt('Переведи для продавца: Мне нужен хороший корм для гуппи и неонов')">💬 Корм для рыб (фр)</button>
@@ -346,11 +385,127 @@
         }).catch(err => { alert('Пожалуйста, просто покажите экран продавцу.'); });
     }
 
-    // --- Интеграция Gemini API ---
-    const apiKey = ""; // API ключ подставится автоматически платформой
+    // --- Интеграция ИИ через OpenRouter ---
+    const apiKey = "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"; // Ключ API от OpenRouter установлен
+
+    // --- Голосовой ввод (Web Speech API) ---
+    let recognition = null;
+    let isRecording = false;
+    let preRecordingText = '';
+
+    function initSpeechRecognition() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) return null;
+        
+        const rec = new SpeechRecognition();
+        rec.lang = 'ru-RU'; // Распознаем русскую речь
+        rec.continuous = false; // Автоматически останавливаемся после окончания фразы
+        rec.interimResults = true; // Показываем промежуточные результаты на лету
+
+        rec.onstart = () => {
+            isRecording = true;
+            document.getElementById('mic-btn').classList.add('recording');
+            document.getElementById('ai-input').placeholder = "Слушаю вас...";
+            
+            const inputEl = document.getElementById('ai-input');
+            preRecordingText = inputEl.value;
+            // Добавляем пробел перед новым текстом, если поле не пустое
+            if (preRecordingText && !preRecordingText.endsWith(' ')) {
+                preRecordingText += ' ';
+            }
+        };
+
+        rec.onresult = (event) => {
+            let interimTranscript = '';
+            let finalTranscript = '';
+
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    finalTranscript += event.results[i][0].transcript;
+                } else {
+                    interimTranscript += event.results[i][0].transcript;
+                }
+            }
+            
+            const inputEl = document.getElementById('ai-input');
+            inputEl.value = preRecordingText + finalTranscript + interimTranscript;
+            
+            if (finalTranscript) {
+                preRecordingText += finalTranscript + ' ';
+            }
+        };
+
+        rec.onerror = (event) => {
+            console.error("Ошибка распознавания речи:", event.error);
+            stopRecording();
+        };
+
+        rec.onend = () => {
+            stopRecording();
+        };
+
+        return rec;
+    }
+
+    function stopRecording() {
+        isRecording = false;
+        document.getElementById('mic-btn').classList.remove('recording');
+        document.getElementById('ai-input').placeholder = "Например: Можно ли добавить в этот список креветок вишен?";
+    }
+
+    function toggleVoiceInput() {
+        if (!recognition) {
+            recognition = initSpeechRecognition();
+            if (!recognition) {
+                alert("Извините, ваш браузер не поддерживает голосовой ввод. Попробуйте Chrome, Safari или Edge.");
+                return;
+            }
+        }
+
+        if (isRecording) {
+            recognition.stop();
+        } else {
+            recognition.start();
+        }
+    }
 
     function fillPrompt(text) {
         document.getElementById('ai-input').value = text;
+    }
+
+    // --- Голосовой вывод (Web Speech API) ---
+    let windowAiText = ""; 
+    
+    function toggleTTS() {
+        if (!window.speechSynthesis) {
+            alert("Ваш браузер не поддерживает озвучивание текста.");
+            return;
+        }
+
+        const ttsBtn = document.getElementById('tts-btn');
+
+        if (window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel();
+            ttsBtn.innerHTML = "🔊 Озвучить ответ";
+            ttsBtn.classList.remove('playing');
+        } else {
+            // Очищаем HTML теги, чтобы ИИ читал только чистый текст
+            const plainText = windowAiText.replace(/<[^>]+>/g, '');
+            const utterance = new SpeechSynthesisUtterance(plainText);
+            
+            utterance.lang = 'ru-RU';
+            utterance.rate = 1.0;  // Скорость речи
+            utterance.pitch = 1.1; // Чуть более высокий/доброжелательный тон
+            
+            utterance.onend = () => {
+                ttsBtn.innerHTML = "🔊 Озвучить ответ";
+                ttsBtn.classList.remove('playing');
+            };
+
+            window.speechSynthesis.speak(utterance);
+            ttsBtn.innerHTML = "⏹ Остановить чтение";
+            ttsBtn.classList.add('playing');
+        }
     }
 
     async function askGemini() {
@@ -361,19 +516,30 @@
         const btn = document.getElementById('ai-btn');
         const output = document.getElementById('ai-output');
 
+        // Останавливаем предыдущую озвучку, если она была
+        if (window.speechSynthesis && window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel();
+        }
+
         // UI состояние загрузки
         btn.innerText = "✨ Думаю...";
         btn.disabled = true;
         btn.style.opacity = "0.7";
         output.style.display = "block";
-        output.innerHTML = '<div class="ru-text">Связываюсь с ИИ-базой знаний...</div>';
+        output.innerHTML = '<div class="ru-text">Связываюсь с базой знаний... 🐟🌿</div>';
 
-        // Системный промпт задает контекст: ИИ уже знает о параметрах аквариума!
-        const systemInstruction = "Ты эксперт-аквариумист. У пользователя 50-литровый аквариум, запущен 3-4 недели назад, живут 7-8 гуппи. Он планирует купить: Анубиас, Роголистник, Кладофору, 4-6 коридорасов (панда/крапчатый), 2 медовых гурами и 6 голубых неонов. Отвечай кратко, дружелюбно и по делу на русском языке. Форматируй текст ТОЛЬКО через базовые HTML теги (например, <p>, <strong>, <br>), НЕ используй Markdown символы вроде ** или *. Если просят перевести фразу для продавца - переведи на вежливый французский и дай пояснение.";
+        // Продвинутый системный промпт (Роль: Добрый эксперт для общения с детьми и взрослыми)
+        const systemInstruction = `Ты — добрый, мудрый и очень опытный аквариумист со стажем. Ты знаешь абсолютно всё о рыбках, растениях, параметрах воды и уходе за аквариумом. Твоя задача — помогать, давать полезные советы и отвечать на вопросы так, чтобы было понятно, увлекательно и интересно даже ребенку. Будь дружелюбным, используй подбадривающий тон.
+        Контекст: У пользователя есть аквариум на 50 литров. Он запущен 3-4 недели назад. Там уже отлично живут 7-8 гуппи. Пользователь сегодня планирует докупить: Анубиас, Роголистник, Кладофору, 4-6 коридорасов (панда или крапчатый), 2 медовых гурами и 6 голубых неонов.
+        ОЧЕНЬ ВАЖНО: Форматируй текст ТОЛЬКО через базовые HTML теги (например, <p>, <strong>, <br>). КАТЕГОРИЧЕСКИ НЕ ИСПОЛЬЗУЙ Markdown (никаких звездочек ** или решеток #). Если просят перевести фразу для продавца - вежливо переведи на французский и кратко объясни.`;
 
+        // Формат запроса для OpenRouter
         const payload = {
-            contents: [{ parts: [{ text: input }] }],
-            systemInstruction: { parts: [{ text: systemInstruction }] }
+            model: "google/gemini-2.0-flash-lite-preview-02-05:free", // Отличная бесплатная модель
+            messages: [
+                { role: "system", content: systemInstruction },
+                { role: "user", content: input }
+            ]
         };
 
         // Экспоненциальная задержка при ошибках
@@ -392,17 +558,28 @@
         };
 
         try {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const url = `https://openrouter.ai/api/v1/chat/completions`;
             const result = await fetchWithRetry(url, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`,
+                    'HTTP-Referer': window.location.href, // OpenRouter рекомендует передавать URL вашего сайта
+                    'X-Title': 'Mon Aquarium' // Имя вашего приложения
+                },
                 body: JSON.stringify(payload)
             });
 
-            const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "Извините, не смог получить ответ.";
-            output.innerHTML = `<div class="fr-text" style="font-weight: 500;">${text}</div>`;
+            const text = result.choices?.[0]?.message?.content || "Извините, не смог найти ответ в своих энциклопедиях.";
+            
+            // Сохраняем текст для озвучки и выводим на экран
+            windowAiText = text;
+            output.innerHTML = `
+                <div class="fr-text" style="font-weight: 500;">${text}</div>
+                <button id="tts-btn" class="tts-btn" onclick="toggleTTS()">🔊 Озвучить ответ</button>
+            `;
         } catch (error) {
-            output.innerHTML = `<div class="ru-text" style="color: #dc2626;">Произошла ошибка при подключении к ИИ. Попробуйте чуть позже.</div>`;
+            output.innerHTML = `<div class="ru-text" style="color: #dc2626;">Произошла ошибка при подключении. Рыбки перегрызли провод интернета! Попробуйте еще раз чуть позже.</div>`;
         } finally {
             btn.innerText = "✨ Спросить ИИ";
             btn.disabled = false;
