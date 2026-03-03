@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Mon Aquarium - Shopping Plan</title>
+    <style>
+        :root {
+            --primary: #0284c7;
+            --primary-dark: #075985;
+            --accent: #f59e0b;
+            --bg-blur: rgba(255, 255, 255, 0.90);
+            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+            --text-main: #111827;
+            --text-muted: #4b5563;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-image: url('https://i.ibb.co/931twVqM/image.jpg');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container { max-width: 650px; margin: 0 auto; padding-bottom: 50px; }
+        
+        h1 {
+            text-align: center; color: white;
+            text-shadow: 0px 4px 8px rgba(0, 0, 0, 0.8);
+            margin-bottom: 40px; font-size: 2.2rem; font-weight: 800;
+        }
+
+        .card {
+            background: var(--bg-blur);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border-radius: 20px; padding: 25px; margin-bottom: 25px;
+            box-shadow: var(--card-shadow); border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .card-title {
+            font-size: 1.4rem; font-weight: 700; margin-top: 0; margin-bottom: 20px;
+            color: var(--primary-dark); border-bottom: 2px solid var(--accent); padding-bottom: 10px;
+        }
+        
+        /* Развернутый блок для продавца */
+        .seller-block {
+            background: #f8fafc; border-left: 5px solid var(--primary);
+            padding: 20px; border-radius: 8px; margin-bottom: 20px; font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .fr-text { font-weight: 600; color: #0f172a; margin-bottom: 4px; font-size: 1rem; }
+        .ru-text { font-size: 0.85rem; color: #64748b; margin-bottom: 15px; font-style: italic; border-bottom: 1px dashed #cbd5e1; padding-bottom: 10px; }
+        .ru-text:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        
+        .section-title { font-weight: 800; color: var(--primary-dark); margin-top: 15px; margin-bottom: 5px; }
+        
+        .copy-btn {
+            background-color: var(--primary); color: white; border: none;
+            padding: 14px 20px; border-radius: 12px; cursor: pointer;
+            font-weight: 700; font-size: 1rem; width: 100%; transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(2, 132, 199, 0.3);
+        }
+        .copy-btn:active { transform: scale(0.98); }
+
+        .item-list { margin-top: 15px; }
+        .item-row {
+            display: flex; align-items: center; padding: 15px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1); cursor: pointer; position: relative;
+        }
+        .item-row:last-child { border-bottom: none; }
+        
+        /* Фотографии с увеличением */
+        .item-img {
+            width: 85px; height: 85px; border-radius: 15px; object-fit: cover;
+            margin-right: 20px; border: 3px solid white; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.15);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s, filter 0.3s, opacity 0.3s;
+            position: relative; z-index: 1; transform-origin: left center; background-color: #fff;
+        }
+        .item-img:hover, .item-img:active {
+            transform: scale(2.6); z-index: 50; box-shadow: 0 15px 30px rgba(0,0,0,0.5); cursor: zoom-in;
+        }
+
+        .item-details { flex-grow: 1; }
+        .item-name-ru { font-weight: 800; font-size: 1.1rem; display: block; color: var(--text-main); }
+        .item-name-fr { font-size: 0.9rem; color: var(--primary); display: block; font-weight: 600; }
+        
+        .yt-link {
+            display: inline-block; margin-top: 6px; padding: 4px 8px;
+            background-color: #fee2e2; color: #dc2626; text-decoration: none;
+            border-radius: 6px; font-size: 0.8rem; font-weight: bold;
+        }
+        
+        input[type="checkbox"] { width: 28px; height: 28px; accent-color: var(--accent); cursor: pointer; margin-left: auto; }
+        
+        .item-row.checked .item-name-ru { text-decoration: line-through; color: var(--text-muted); }
+        .item-row.checked .item-img { opacity: 0.4; filter: grayscale(100%); }
+        .item-row.checked .item-img:hover { opacity: 1; filter: grayscale(0%); }
+
+        .step-row { display: flex; margin-bottom: 20px; }
+        .step-num {
+            background: var(--accent); color: white; width: 35px; height: 35px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: 900; margin-right: 20px; font-size: 1.2rem; flex-shrink: 0;
+        }
+        .step-text h4 { margin: 0 0 5px 0; font-size: 1.1rem; }
+        .step-text p { margin: 0; font-size: 0.95rem; color: var(--text-muted); }
+        .step-warning {
+            background: #fef2f2; color: #dc2626; padding: 15px; border-radius: 12px;
+            font-size: 0.9rem; margin-top: 15px; font-weight: 600; border-left: 4px solid #dc2626;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Мой Аквариум</h1>
+
+    <div class="card">
+        <h2 class="card-title">🗣️ Разговор с продавцом</h2>
+        <div class="seller-block">
+            <div class="fr-text">Bonjour ! J'ai un aquarium de 50 litres à la maison. L'eau est déjà cyclée, le filtre fonctionne depuis 3-4 semaines, et j'ai déjà 7 ou 8 petits guppys qui se portent très bien.</div>
+            <div class="ru-text">(Здравствуйте! У меня дома 50-литровый аквариум. Он уже запущен, фильтр работает 3-4 недели, и там уже отлично живут 7-8 маленьких гуппи.)</div>
+
+            <div class="fr-text">Je n'ai pas de sol nutritif, juste du gravier classique, donc je cherche des plantes très faciles. Aujourd'hui, je voudrais acheter la liste suivante :</div>
+            <div class="ru-text">(У меня нет питательного грунта, только обычная галька, поэтому я ищу самые неприхотливые растения. Сегодня я хотел бы купить следующее:)</div>
+
+            <div class="section-title">🌿 Plantes (Растения):</div>
+            <div class="fr-text">- 1 x Anubias : fixée sur une petite racine ou une pierre, s'il vous plaît.</div>
+            <div class="ru-text">(1 х Анубиас: закрепленный на небольшой коряге или камне.)</div>
+            
+            <div class="fr-text">- 1 ou 2 bouquets de Ceratophyllum (Cornifle) : pour laisser flotter à la surface.</div>
+            <div class="ru-text">(1-2 пучка Роголистника: чтобы оставить плавать на поверхности.)</div>
+
+            <div class="section-title">🐟 Poissons (Рыбки):</div>
+            <div class="fr-text">- 4-6 x Corydoras (Panda ou Poivrés) : pour nettoyer le fond.</div>
+            <div class="ru-text">(4-6 х Коридораса — панда или крапчатые: чистить дно.)</div>
+            
+            <div class="fr-text">- 2 x Gouramis Miel (Colisa chuna) : je voudrais la variété naine (miel). Si possible, un couple (1 mâle et 1 femelle).</div>
+            <div class="ru-text">(2 х Медовых гурами: именно карликовый вид. Если можно, пару.)</div>
+
+            <div class="fr-text" style="margin-top:15px;">Pouvez-vous me préparer cela, s'il vous plaît ?</div>
+            <div class="ru-text">(Подготовьте это для меня, пожалуйста.)</div>
+        </div>
+        <button class="copy-btn" onclick="copyFrenchText()">📋 Скопировать французский текст</button>
+    </div>
+
+    <div class="card">
+        <h2 class="card-title">🛒 Список покупок</h2>
+        <div class="item-list">
+            
+            <label class="item-row">
+                <img src="https://materiel-aquatique.com/wp-content/uploads/2022/08/Anubias-nana-Bonsai-sur-pierre-de-lave.jpg" alt="Anubias" class="item-img">
+                <div class="item-details">
+                    <span class="item-name-ru">Анубиас - 1 шт.</span>
+                    <span class="item-name-fr">Anubias sur racine/pierre</span>
+                    <a href="https://youtu.be/CRAqQUxo_J4" target="_blank" class="yt-link" onclick="event.stopPropagation();">📺 Видео</a>
+                </div>
+                <input type="checkbox" onchange="checkItem(this)">
+            </label>
+
+            <label class="item-row">
+                <img src="https://shop.aquiflor.com/images/ashx/ceratophyllum-demersum-botte-de-plantes-oxy-1.jpeg?s_id=1000899&imgfield=s_image1&imgwidth=700&imgheight=700" alt="Ceratophyllum" class="item-img">
+                <div class="item-details">
+                    <span class="item-name-ru">Роголистник - 1-2 шт.</span>
+                    <span class="item-name-fr">Ceratophyllum (Cornifle)</span>
+                    <a href="https://youtu.be/z_OO0tWPnog" target="_blank" class="yt-link" onclick="event.stopPropagation();">📺 Видео</a>
+                </div>
+                <input type="checkbox" onchange="checkItem(this)">
+            </label>
+
+            <label class="item-row">
+                <img src="https://poissons-online.ch/58930-large_default/corydoras-panda-corydoras-panda.jpg" alt="Corydoras panda" class="item-img">
+                <div class="item-details">
+                    <span class="item-name-ru">Коридорасы - 4-6 шт.</span>
+                    <span class="item-name-fr">Corydoras (Panda / Poivré)</span>
+                    <a href="https://youtu.be/WqoWDtr6fZw" target="_blank" class="yt-link" onclick="event.stopPropagation();">📺 Видео</a>
+                </div>
+                <input type="checkbox" onchange="checkItem(this)">
+            </label>
+
+            <label class="item-row">
+                <img src="https://www.autourdesanimaux.com/wp-content/uploads/races/2193/lg_gourami-miel_6443aa757f714.webp" alt="Gourami miel" class="item-img">
+                <div class="item-details">
+                    <span class="item-name-ru">Медовые гурами - 2 шт.</span>
+                    <span class="item-name-fr">Gourami miel (Colisa chuna)</span>
+                    <a href="https://youtu.be/XhR2VocB3ng" target="_blank" class="yt-link" onclick="event.stopPropagation();">📺 Видео</a>
+                </div>
+                <input type="checkbox" onchange="checkItem(this)">
+            </label>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2 class="card-title">🛑 Правила новоселья</h2>
+        <div class="step-row">
+            <div class="step-num">1</div>
+            <div class="step-text"><h4>Пакет в аквариум (20 мин)</h4><p>Температуры в пакете и в аквариуме должны сравняться.</p></div>
+        </div>
+        <div class="step-row">
+            <div class="step-num">2</div>
+            <div class="step-text"><h4>Приучение к воде</h4><p>Раз в 10 минут подливайте по полстакана вашей воды в пакет (3-4 раза).</p></div>
+        </div>
+        <div class="step-row">
+            <div class="step-num">3</div>
+            <div class="step-text"><h4>Заселение</h4><p>Выловите рыбок сачком. Не кормите их в первый день!</p></div>
+        </div>
+        <div class="step-warning">❌ Не выливайть воду из пакета в аквариум!</div>
+    </div>
+</div>
+
+<script>
+    function checkItem(checkbox) {
+        const row = checkbox.closest('.item-row');
+        if (checkbox.checked) { row.classList.add('checked'); } 
+        else { row.classList.remove('checked'); }
+    }
+
+    function copyFrenchText() {
+        const textToCopy = "Bonjour ! J'ai un aquarium de 50 litres à la maison. L'eau est déjà cyclée, le filtre fonctionne depuis 3-4 semaines, et j'ai déjà 7 ou 8 petits guppys qui se portent très bien.\n\nJe n'ai pas de sol nutritif, juste du gravier classique, donc je cherche des plantes très faciles. Aujourd'hui, je voudrais acheter la liste exacte suivante pour compléter mon écosystème :\n\nPlantes très faciles :\n- 1 x Anubias : s'il vous plaît, je la voudrais déjà fixée sur une petite racine ou une pierre, car je sais qu'il ne faut pas l'enterrer dans le sable.\n- 1 ou 2 bouquets de Ceratophyllum (Cornifle) : que je vais juste laisser flotter à la surface pour protéger les futurs alevins de mes guppys.\n\nPoissons (compatibles avec mes guppys) :\n- 4-6 x Corydoras (Panda ou Poivrés) : pour nettoyer le fond. Je sais qu'ils doivent vivre en petit groupe de 4 minimum.\n- 2 x Gouramis Miel (Colisa chuna) : je voudrais spécifiquement la variedad naine (miel) pour ne pas surpeupler mon aquarium de 50L. Si possible, un couple (1 mâle et 1 femelle).\n\nPouvez-vous me préparer cela, s'il vous plaît ?";
+        
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            const btn = document.querySelector('.copy-btn');
+            btn.innerText = "✅ Текст скопирован!";
+            btn.style.backgroundColor = "#16a34a"; 
+            setTimeout(() => {
+                btn.innerText = "📋 Скопировать французский текст";
+                btn.style.backgroundColor = "";
+            }, 3000);
+        }).catch(err => { alert('Пожалуйста, просто покажите экран продавцу.'); });
+    }
+</script>
+
+</body>
+</html>
