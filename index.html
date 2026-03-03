@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Mon Aquarium - Shopping Plan</title>
+    <title>Mon Aquarium - Shopping Plan</title>
     <style>
         :root {
             --primary: #0284c7;
@@ -17,7 +17,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-image: url('https://i.ibb.co/931twVqM/image.jpg');
+            background-image: url('https://i.ibb.co/RT0R9K8r/image.jpg');
             background-size: cover;
             background-attachment: fixed;
             background-position: center;
@@ -88,6 +88,7 @@
         .item-details { flex-grow: 1; }
         .item-name-ru { font-weight: 800; font-size: 1.1rem; display: block; color: var(--text-main); }
         .item-name-fr { font-size: 0.9rem; color: var(--primary); display: block; font-weight: 600; }
+        .item-desc-ru { font-size: 0.85rem; color: var(--text-muted); display: block; margin-top: 2px; }
         
         .yt-link {
             display: inline-block; margin-top: 6px; padding: 4px 8px;
@@ -126,24 +127,26 @@
             <div class="fr-text">Bonjour ! J'ai un aquarium de 50 litres à la maison. L'eau est déjà cyclée, le filtre fonctionne depuis 3-4 semaines, et j'ai déjà 7 ou 8 petits guppys qui se portent très bien.</div>
             <div class="ru-text">(Здравствуйте! У меня дома 50-литровый аквариум. Он уже запущен, фильтр работает 3-4 недели, и там уже отлично живут 7-8 маленьких гуппи.)</div>
 
-            <div class="fr-text">Je n'ai pas de sol nutritif, juste du gravier classique, donc je cherche des plantes très faciles. Aujourd'hui, je voudrais acheter la liste suivante :</div>
+            <div class="fr-text">Je n'ai pas de sol nutritif, juste du gravier classique, donc je cherche des plantes très faciles. Aujourd'hui, je voudrais acheter la liste exacte suivante :</div>
             <div class="ru-text">(У меня нет питательного грунта, только обычная галька, поэтому я ищу самые неприхотливые растения. Сегодня я хотел бы купить следующее:)</div>
 
-            <div class="section-title">🌿 Plantes (Растения):</div>
-            <div class="fr-text">- 1 x Anubias : fixée sur une petite racine ou une pierre, s'il vous plaît.</div>
+            <div class="section-title">🌿 Plantes & Mousses :</div>
+            <div class="fr-text">- 1 x Anubias : s'il vous plaît, je la voudrais déjà fixée sur une petite racine ou une pierre.</div>
             <div class="ru-text">(1 х Анубиас: закрепленный на небольшой коряге или камне.)</div>
-            
             <div class="fr-text">- 1 ou 2 bouquets de Ceratophyllum (Cornifle) : pour laisser flotter à la surface.</div>
             <div class="ru-text">(1-2 пучка Роголистника: чтобы оставить плавать на поверхности.)</div>
+            <div class="fr-text">- 2 x Cladophora (Balle de mousse) : les petites boules vertes.</div>
+            <div class="ru-text">(2 х Кладофора: зеленые шарики.)</div>
 
-            <div class="section-title">🐟 Poissons (Рыбки):</div>
+            <div class="section-title">🐟 Poissons (compatibles guppys) :</div>
             <div class="fr-text">- 4-6 x Corydoras (Panda ou Poivrés) : pour nettoyer le fond.</div>
             <div class="ru-text">(4-6 х Коридораса — панда или крапчатые: чистить дно.)</div>
-            
-            <div class="fr-text">- 2 x Gouramis Miel (Colisa chuna) : je voudrais la variété naine (miel). Si possible, un couple (1 mâle et 1 femelle).</div>
-            <div class="ru-text">(2 х Медовых гурами: именно карликовый вид. Если можно, пару.)</div>
+            <div class="fr-text">- 2 x Gouramis Miel (Colisa chuna) : variété naine, si possible un couple (mâle/femelle).</div>
+            <div class="ru-text">(2 х Медовых гурами: именно карликовый вид, если можно — пару.)</div>
+            <div class="fr-text">- 6 x Néons bleus (Paracheirodon innesi) : pour vivre en banc.</div>
+            <div class="ru-text">(6 х Голубых неонов: для стайки.)</div>
 
-            <div class="fr-text" style="margin-top:15px;">Pouvez-vous me préparer cela, s'il vous plaît </div>
+            <div class="fr-text" style="margin-top:15px;">Pouvez-vous me préparer cela, s'il vous plaît ?</div>
             <div class="ru-text">(Подготовьте это для меня, пожалуйста.)</div>
         </div>
         <button class="copy-btn" onclick="copyFrenchText()">📋 Скопировать французский текст</button>
@@ -154,44 +157,70 @@
         <div class="item-list">
             
             <label class="item-row">
-                <img src="https://materiel-aquatique.com/wp-content/uploads/2022/08/Anubias-nana-Bonsai-sur-pierre-de-lave.jpg" alt="Anubias" class="item-img">
+                <img src="https://materiel-aquatique.com/wp-content/uploads/2022/08/Anubias-nana-Bonsai-sur-pierre-de-lave.jpg" class="item-img">
                 <div class="item-details">
-                    <span class="item-name-ru">Анубиас -     1 шт.</span>
+                    <span class="item-name-ru">Анубиас - 1 шт.</span>
                     <span class="item-name-fr">Anubias sur racine/pierre</span>
+                    <span class="item-desc-ru">На коряге/камне. На дно.</span>
                     <a href="https://youtu.be/CRAqQUxo_J4" target="_blank" class="yt-link" onclick="event.stopPropagation();">📺 Видео</a>
                 </div>
                 <input type="checkbox" onchange="checkItem(this)">
             </label>
 
             <label class="item-row">
-                <img src="https://shop.aquiflor.com/images/ashx/ceratophyllum-demersum-botte-de-plantes-oxy-1.jpeg?s_id=1000899&imgfield=s_image1&imgwidth=700&imgheight=700" alt="Ceratophyllum" class="item-img">
+                <img src="https://shop.aquiflor.com/images/ashx/ceratophyllum-demersum-botte-de-plantes-oxy-1.jpeg?s_id=1000899&imgfield=s_image1&imgwidth=700&imgheight=700" class="item-img">
                 <div class="item-details">
-                    <span class="item-name-ru">Роголистник -    1-2 шт.</span>
+                    <span class="item-name-ru">Роголистник - 1-2 шт.</span>
                     <span class="item-name-fr">Ceratophyllum (Cornifle)</span>
+                    <span class="item-desc-ru">Бросить плавать на поверхности.</span>
                     <a href="https://youtu.be/z_OO0tWPnog" target="_blank" class="yt-link" onclick="event.stopPropagation();">📺 Видео</a>
                 </div>
                 <input type="checkbox" onchange="checkItem(this)">
             </label>
 
             <label class="item-row">
-                <img src="https://poissons-online.ch/58930-large_default/corydoras-panda-corydoras-panda.jpg" alt="Corydoras panda" class="item-img">
+                <img src="https://exoticzoo.com.ua/image/cache/catalog/data/rasteniya/kladofora-rastenie-500x500.jpg" class="item-img">
                 <div class="item-details">
-                    <span class="item-name-ru">Коридорасы -   4-6 шт.</span>
+                    <span class="item-name-ru">Кладофора - 2 шт.</span>
+                    <span class="item-name-fr">Cladophora (Balle de mousse)</span>
+                    <span class="item-desc-ru">Зеленый шарик. Просто положить на дно.</span>
+                </div>
+                <input type="checkbox" onchange="checkItem(this)">
+            </label>
+
+            <label class="item-row">
+                <img src="https://poissons-online.ch/58930-large_default/corydoras-panda-corydoras-panda.jpg" class="item-img">
+                <div class="item-details">
+                    <span class="item-name-ru">Коридорасы - 4-6 шт.</span>
                     <span class="item-name-fr">Corydoras (Panda / Poivré)</span>
+                    <span class="item-desc-ru">Уборщики на дно (панда/крапчатый).</span>
                     <a href="https://youtu.be/WqoWDtr6fZw" target="_blank" class="yt-link" onclick="event.stopPropagation();">📺 Видео</a>
                 </div>
                 <input type="checkbox" onchange="checkItem(this)">
             </label>
 
             <label class="item-row">
-                <img src="https://www.autourdesanimaux.com/wp-content/uploads/races/2193/lg_gourami-miel_6443aa757f714.webp" alt="Gourami miel" class="item-img">
+                <img src="https://www.autourdesanimaux.com/wp-content/uploads/races/2193/lg_gourami-miel_6443aa757f714.webp" class="item-img">
                 <div class="item-details">
                     <span class="item-name-ru">Медовые гурами - 2 шт.</span>
                     <span class="item-name-fr">Gourami miel (Colisa chuna)</span>
+                    <span class="item-desc-ru">Пара (самец и самка). Яркий акцент.</span>
                     <a href="https://youtu.be/XhR2VocB3ng" target="_blank" class="yt-link" onclick="event.stopPropagation();">📺 Видео</a>
                 </div>
                 <input type="checkbox" onchange="checkItem(this)">
             </label>
+
+            <label class="item-row">
+                <img src="https://www.nageoirebleue.com/cdn/shop/articles/neontetra_2048x_dd2b694d-b7be-44dd-af79-dd4da1f30b3d.jpg?v=1713652913" class="item-img">
+                <div class="item-details">
+                    <span class="item-name-ru">Неоны голубые - 6 шт.</span>
+                    <span class="item-name-fr">Néon bleu (Paracheirodon innesi)</span>
+                    <span class="item-desc-ru">Стайная светящаяся рыбка.</span>
+                    <a href="https://www.youtube.com/watch?v=HjqceXn5apk" target="_blank" class="yt-link" onclick="event.stopPropagation();">📺 Видео</a>
+                </div>
+                <input type="checkbox" onchange="checkItem(this)">
+            </label>
+
         </div>
     </div>
 
@@ -221,7 +250,7 @@
     }
 
     function copyFrenchText() {
-        const textToCopy = "Bonjour ! J'ai un aquarium de 50 litres à la maison. L'eau est déjà cyclée, le filtre fonctionne depuis 3-4 semaines, et j'ai déjà 7 ou 8 petits guppys qui se portent très bien.\n\nJe n'ai pas de sol nutritif, juste du gravier classique, donc je cherche des plantes très faciles. Aujourd'hui, je voudrais acheter la liste exacte suivante pour compléter mon écosystème :\n\nPlantes très faciles :\n- 1 x Anubias : s'il vous plaît, je la voudrais déjà fixée sur une petite racine ou une pierre, car je sais qu'il ne faut pas l'enterrer dans le sable.\n- 1 ou 2 bouquets de Ceratophyllum (Cornifle) : que je vais juste laisser flotter à la surface pour protéger les futurs alevins de mes guppys.\n\nPoissons (compatibles avec mes guppys) :\n- 4-6 x Corydoras (Panda ou Poivrés) : pour nettoyer le fond. Je sais qu'ils doivent vivre en petit groupe de 4 minimum.\n- 2 x Gouramis Miel (Colisa chuna) : je voudrais spécifiquement la variedad naine (miel) pour ne pas surpeupler mon aquarium de 50L. Si possible, un couple (1 mâle et 1 femelle).\n\nPouvez-vous me préparer cela, s'il vous plaît ?";
+        const textToCopy = "Bonjour ! J'ai un aquarium de 50 litres à la maison. L'eau est déjà cyclée, le filtre fonctionne depuis 3-4 semaines, et j'ai déjà 7 ou 8 petits guppys qui se portent très bien. Je n'ai pas de sol nutritif, juste du gravier classique, donc je cherche des plantes très faciles. Aujourd'hui, je voudrais acheter la liste exacte suivante :\n\n- 1 x Anubias (sur racine ou pierre)\n- 1 ou 2 bouquets de Ceratophyllum (Cornifle)\n- 2 x Cladophora (Balle de mousse)\n- 4-6 x Corydoras (Panda ou Poivrés)\n- 2 x Gouramis Miel (Colisa chuna - un couple)\n- 6 x Néons bleus (Paracheirodon innesi)\n\nPouvez-vous me préparer cela, s'il vous plaît ?";
         
         navigator.clipboard.writeText(textToCopy).then(() => {
             const btn = document.querySelector('.copy-btn');
