@@ -17,7 +17,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-image: url('https://i.ibb.co/RT0R9K8r/image.jpg');
+            background-image: url('https://i.ibb.co/xK8Sckzm/image.jpg');
             background-size: cover;
             background-attachment: fixed;
             background-position: center;
@@ -77,7 +77,7 @@
         .header-fish { background: linear-gradient(135deg, rgba(0, 122, 255, 0.25), rgba(0, 122, 255, 0.05)); } /* Apple Blue */
         .order-body { 
             padding: 16px 18px; 
-            background: rgba(255, 255, 255, 0.3); 
+            background: rgba(255, 255, 255, 0.35); 
         }
         .order-body .ru-text:last-child { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
         
@@ -146,6 +146,32 @@
             box-shadow: inset 0 0 0 1px rgba(220, 38, 38, 0.2); border-left: none;
             backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
         }
+        
+        /* Стили для умного помощника (ИИ) */
+        #ai-input {
+            width: 100%; box-sizing: border-box; padding: 16px; margin-top: 15px;
+            border-radius: 18px; border: 1px solid rgba(0,0,0,0.08);
+            background: rgba(255, 255, 255, 0.5); font-family: inherit; font-size: 1rem;
+            resize: vertical; min-height: 85px; color: #1d1d1f; outline: none;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.02);
+            transition: all 0.3s ease;
+        }
+        #ai-input:focus { border-color: var(--primary); background: rgba(255, 255, 255, 0.8); }
+        
+        .chip-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; margin-bottom: 18px; }
+        .chip {
+            background: rgba(2, 132, 199, 0.1); color: var(--primary-dark);
+            border: 1px solid rgba(2, 132, 199, 0.2); padding: 8px 14px;
+            border-radius: 20px; font-size: 0.85rem; cursor: pointer; font-weight: 600;
+            transition: all 0.2s;
+        }
+        .chip:hover { background: rgba(2, 132, 199, 0.2); transform: translateY(-1px); }
+        .chip:active { transform: translateY(1px); }
+        
+        #ai-output { display: none; margin-top: 15px; padding: 18px; font-size: 0.95rem; color: #1d1d1f; }
+        #ai-output p { margin-top: 0; margin-bottom: 10px; line-height: 1.5; }
+        #ai-output p:last-child { margin-bottom: 0; }
+        #ai-output strong { color: var(--primary-dark); }
     </style>
 </head>
 <body>
@@ -265,6 +291,23 @@
     </div>
 
     <div class="card">
+        <h2 class="card-title">✨ Умный помощник</h2>
+        <div class="step-text"><p>Сомневаетесь в совместимости рыб или хотите перевести фразу для продавца? Спросите ИИ-аквариумиста!</p></div>
+        
+        <textarea id="ai-input" placeholder="Например: Можно ли добавить в этот список креветок вишен?"></textarea>
+        
+        <div class="chip-container">
+            <button class="chip" onclick="fillPrompt('Переведи для продавца: Мне нужен хороший корм для гуппи и неонов')">💬 Корм для рыб (фр)</button>
+            <button class="chip" onclick="fillPrompt('Как правильно сажать Анубиас?')">🌱 Посадка Анубиаса</button>
+            <button class="chip" onclick="fillPrompt('Уживутся ли креветки амано с этими рыбками?')">🦐 Креветки амано</button>
+        </div>
+        
+        <button class="copy-btn" id="ai-btn" onclick="askGemini()">✨ Спросить ИИ</button>
+        
+        <div id="ai-output" class="seller-block"></div>
+    </div>
+
+    <div class="card">
         <h2 class="card-title">🛑 Правила новоселья</h2>
         <div class="step-row">
             <div class="step-num">1</div>
@@ -301,6 +344,70 @@
                 btn.style.backgroundColor = "";
             }, 3000);
         }).catch(err => { alert('Пожалуйста, просто покажите экран продавцу.'); });
+    }
+
+    // --- Интеграция Gemini API ---
+    const apiKey = ""; // API ключ подставится автоматически платформой
+
+    function fillPrompt(text) {
+        document.getElementById('ai-input').value = text;
+    }
+
+    async function askGemini() {
+        const inputEl = document.getElementById('ai-input');
+        const input = inputEl.value.trim();
+        if (!input) return;
+
+        const btn = document.getElementById('ai-btn');
+        const output = document.getElementById('ai-output');
+
+        // UI состояние загрузки
+        btn.innerText = "✨ Думаю...";
+        btn.disabled = true;
+        btn.style.opacity = "0.7";
+        output.style.display = "block";
+        output.innerHTML = '<div class="ru-text">Связываюсь с ИИ-базой знаний...</div>';
+
+        // Системный промпт задает контекст: ИИ уже знает о параметрах аквариума!
+        const systemInstruction = "Ты эксперт-аквариумист. У пользователя 50-литровый аквариум, запущен 3-4 недели назад, живут 7-8 гуппи. Он планирует купить: Анубиас, Роголистник, Кладофору, 4-6 коридорасов (панда/крапчатый), 2 медовых гурами и 6 голубых неонов. Отвечай кратко, дружелюбно и по делу на русском языке. Форматируй текст ТОЛЬКО через базовые HTML теги (например, <p>, <strong>, <br>), НЕ используй Markdown символы вроде ** или *. Если просят перевести фразу для продавца - переведи на вежливый французский и дай пояснение.";
+
+        const payload = {
+            contents: [{ parts: [{ text: input }] }],
+            systemInstruction: { parts: [{ text: systemInstruction }] }
+        };
+
+        // Экспоненциальная задержка при ошибках
+        const fetchWithRetry = async (url, options, retries = 5, delay = 1000) => {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) throw new Error(`HTTP ошибка: ${response.status}`);
+                    return await response.json();
+                } catch (error) {
+                    if (i === retries - 1) throw error;
+                    await new Promise(res => setTimeout(res, delay));
+                    delay *= 2;
+                }
+            }
+        };
+
+        try {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const result = await fetchWithRetry(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "Извините, не смог получить ответ.";
+            output.innerHTML = `<div class="fr-text" style="font-weight: 500;">${text}</div>`;
+        } catch (error) {
+            output.innerHTML = `<div class="ru-text" style="color: #dc2626;">Произошла ошибка при подключении к ИИ. Попробуйте чуть позже.</div>`;
+        } finally {
+            btn.innerText = "✨ Спросить ИИ";
+            btn.disabled = false;
+            btn.style.opacity = "1";
+        }
     }
 </script>
 
